@@ -7,123 +7,26 @@ import {
   Paper, 
   Stack,
   TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   Alert,
   CircularProgress
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function SupabaseManager() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogAction, setDialogAction] = useState('');
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     telefone: '',
-    mensagem: ''
+    mensagem: '',
+    secretaria: ''
   });
 
-  // Função para verificar se a tabela 'prefilheus' existe
-  async function checkTable() {
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    
-    try {
-      const { data, error } = await supabase
-        .from('prefilheus')
-        .select('*')
-        .limit(1);
-      
-      if (error) {
-        setError(`Erro ao verificar tabela: ${error.message}`);
-      } else {
-        setResult('A tabela prefilheus existe e está acessível.');
-      }
-    } catch (err) {
-      setError(`Erro ao verificar tabela: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Função para inserir dados de exemplo na tabela 'prefilheus'
-  async function insertSampleData() {
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    
-    const sampleData = [
-      {
-        nome: 'João Silva',
-        email: 'joao@exemplo.com',
-        telefone: '(11) 98765-4321',
-        mensagem: 'Gostaria de mais informações sobre seus serviços.'
-      },
-      {
-        nome: 'Maria Oliveira',
-        email: 'maria@exemplo.com',
-        telefone: '(21) 91234-5678',
-        mensagem: 'Preciso de um orçamento para o meu projeto.'
-      },
-      {
-        nome: 'Carlos Santos',
-        email: 'carlos@exemplo.com',
-        telefone: '(31) 99876-5432',
-        mensagem: 'Quero agendar uma reunião para discutir uma parceria.'
-      }
-    ];
-    
-    try {
-      const { data, error } = await supabase
-        .from('prefilheus')
-        .insert(sampleData)
-        .select();
-      
-      if (error) {
-        setError(`Erro ao inserir dados: ${error.message}`);
-      } else {
-        setResult(`${data.length} registros inseridos com sucesso!`);
-      }
-    } catch (err) {
-      setError(`Erro ao inserir dados: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Função para limpar todos os dados da tabela 'prefilheus'
-  async function clearAllData() {
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    
-    try {
-      const { error } = await supabase
-        .from('prefilheus')
-        .delete()
-        .neq('id', 0); // Isso irá deletar todas as linhas
-      
-      if (error) {
-        setError(`Erro ao limpar dados: ${error.message}`);
-      } else {
-        setResult('Todos os dados foram removidos com sucesso.');
-      }
-    } catch (err) {
-      setError(`Erro ao limpar dados: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   // Função para inserir um novo registro
-  async function insertNewRecord() {
+  async function insertRecord() {
     setLoading(true);
     setResult(null);
     setError(null);
@@ -138,12 +41,7 @@ export default function SupabaseManager() {
         setError(`Erro ao inserir registro: ${error.message}`);
       } else {
         setResult('Registro inserido com sucesso!');
-        setFormData({
-          nome: '',
-          email: '',
-          telefone: '',
-          mensagem: ''
-        });
+        clearForm();
       }
     } catch (err) {
       setError(`Erro ao inserir registro: ${err.message}`);
@@ -152,24 +50,15 @@ export default function SupabaseManager() {
     }
   }
 
-  // Funções para lidar com os diálogos de confirmação
-  const handleOpenDialog = (action) => {
-    setDialogAction(action);
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const handleConfirmAction = () => {
-    setOpenDialog(false);
-    
-    if (dialogAction === 'insertSample') {
-      insertSampleData();
-    } else if (dialogAction === 'clearAll') {
-      clearAllData();
-    }
+  // Função para limpar o formulário
+  const clearForm = () => {
+    setFormData({
+      nome: '',
+      email: '',
+      telefone: '',
+      mensagem: '',
+      secretaria: ''
+    });
   };
 
   // Função para lidar com mudanças nos campos do formulário
@@ -184,43 +73,31 @@ export default function SupabaseManager() {
   return (
     <Box sx={{ margin: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Gerenciador de Dados da Prefeitura de Ilhéus
+        Inserir Dados
       </Typography>
       
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Verificação e Operações Básicas
-        </Typography>
-        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-          <Button 
-            variant="contained" 
-            onClick={checkTable}
-            disabled={loading}
-          >
-            Verificar Tabela
-          </Button>
-          <Button 
-            variant="contained" 
-            color="success" 
-            onClick={() => handleOpenDialog('insertSample')}
-            disabled={loading}
-          >
-            Inserir Dados de Exemplo
-          </Button>
-          <Button 
-            variant="contained" 
-            color="error" 
-            onClick={() => handleOpenDialog('clearAll')}
-            disabled={loading}
-          >
-            Limpar Todos os Dados
-          </Button>
-        </Stack>
-      </Paper>
+      {/* Área de resultados e mensagens */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
       
-      <Paper sx={{ p: 3, mb: 3 }}>
+      {result && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setResult(null)}>
+          {result}
+        </Alert>
+      )}
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
-          Adicionar Novo Registro
+          Inserir Novo Registro
         </Typography>
         <Stack spacing={2} sx={{ mb: 2 }}>
           <TextField
@@ -229,6 +106,7 @@ export default function SupabaseManager() {
             value={formData.nome}
             onChange={handleInputChange}
             fullWidth
+            required
           />
           <TextField
             label="Email"
@@ -237,6 +115,7 @@ export default function SupabaseManager() {
             value={formData.email}
             onChange={handleInputChange}
             fullWidth
+            required
           />
           <TextField
             label="Telefone"
@@ -244,6 +123,15 @@ export default function SupabaseManager() {
             value={formData.telefone}
             onChange={handleInputChange}
             fullWidth
+            required
+          />
+          <TextField
+            label="Secretaria"
+            name="secretaria"
+            value={formData.secretaria}
+            onChange={handleInputChange}
+            fullWidth
+            required
           />
           <TextField
             label="Mensagem"
@@ -254,60 +142,29 @@ export default function SupabaseManager() {
             onChange={handleInputChange}
             fullWidth
           />
-          <Button 
-            variant="contained" 
-            onClick={insertNewRecord}
-            disabled={loading}
-          >
-            Salvar Registro
-          </Button>
+          
+          <Stack direction="row" spacing={2}>
+            <Button 
+              variant="outlined" 
+              onClick={clearForm}
+              disabled={loading}
+              startIcon={<ClearIcon />}
+              sx={{ flexGrow: 1 }}
+            >
+              Limpar Campos
+            </Button>
+            <Button 
+              variant="contained" 
+              onClick={insertRecord}
+              disabled={loading}
+              startIcon={<AddIcon />}
+              sx={{ flexGrow: 1 }}
+            >
+              Inserir Dado
+            </Button>
+          </Stack>
         </Stack>
       </Paper>
-      
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
-      
-      {result && (
-        <Alert severity="success" sx={{ mt: 2 }}>
-          {result}
-        </Alert>
-      )}
-      
-      {error && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          {error}
-        </Alert>
-      )}
-      
-      {/* Diálogo de confirmação */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-      >
-        <DialogTitle>
-          {dialogAction === 'insertSample' ? 'Inserir Dados de Exemplo?' : 'Limpar Todos os Dados?'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {dialogAction === 'insertSample' 
-              ? 'Isso irá inserir 3 registros de exemplo na tabela prefilheus. Deseja continuar?'
-              : 'Isso irá remover TODOS os dados da tabela prefilheus. Esta ação não pode ser desfeita. Deseja continuar?'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button 
-            onClick={handleConfirmAction} 
-            color={dialogAction === 'clearAll' ? 'error' : 'primary'}
-            autoFocus
-          >
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
