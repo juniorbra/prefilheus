@@ -25,6 +25,7 @@ export default function PrefilheusTable() {
       const { data, error } = await supabase
         .from('prefilheus')
         .select('*')
+        .order('id', { ascending: false });
 
       if (error) throw error
       setData(data || [])

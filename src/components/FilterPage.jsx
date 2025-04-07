@@ -73,7 +73,8 @@ export default function FilterPage() {
         const { data, error } = await supabase
           .from('prefilheus')
           .select('*')
-          .limit(20);
+          .limit(20)
+          .order('id', { ascending: false });
           
         if (error) throw error;
         
@@ -117,7 +118,8 @@ export default function FilterPage() {
       const { data, error } = await supabase
         .from('prefilheus')
         .select('*')
-        .limit(20);
+        .limit(20)
+        .order('id', { ascending: false });
         
       if (error) throw error;
       
@@ -336,7 +338,8 @@ export default function FilterPage() {
         .from('prefilheus')
         .update(editFormData)
         .eq('id', selectedRecord.id)
-        .select();
+        .select()
+        .order('id', { ascending: false });
       
       if (error) throw error;
       
