@@ -48,56 +48,57 @@ export default function ReportPage() {
   // Função para gerar o relatório
   const generateReport = async () => {
     setLoading(true);
+    setReportData(null);
     setError(null);
     
     try {
-      // Iniciar a consulta para obter todos os registros
       let query = supabase.from('prefilheus').select('*');
       
-      // Aplicar filtro de data de início
+      // Aplicar filtros de data se estiverem definidos
       if (dateRange.startDate) {
         query = query.gte('created_at', dateRange.startDate.toISOString());
       }
       
-      // Aplicar filtro de data de fim
       if (dateRange.endDate) {
-        const endDate = new Date(dateRange.endDate);
-        endDate.setHours(23, 59, 59, 999);
-        query = query.lte('created_at', endDate.toISOString());
+        query = query.lte('created_at', dateRange.endDate.toISOString());
       }
       
-      // Executar a consulta
+      // Ordenar por ID em ordem decrescente
+      query = query.order('id', { ascending: false });
+      
       const { data, error } = await query;
       
-      if (error) throw error;
-      
-      // Processar os dados para o relatório
-      const totalRecords = data ? data.length : 0;
-      
-      // Agrupar por secretaria
-      const secretariaMap = new Map();
-      
-      if (data && data.length > 0) {
-        data.forEach(record => {
-          const secretaria = record.secretaria || 'Não especificada';
-          if (secretariaMap.has(secretaria)) {
-            secretariaMap.set(secretaria, secretariaMap.get(secretaria) + 1);
-          } else {
-            secretariaMap.set(secretaria, 1);
-          }
+      if (error) {
+        setError(`Erro ao gerar relatório: ${error.message}`);
+      } else {
+        // Processar os dados para o relatório
+        const totalRecords = data ? data.length : 0;
+        
+        // Agrupar por secretaria
+        const secretariaMap = new Map();
+        
+        if (data && data.length > 0) {
+          data.forEach(record => {
+            const secretaria = record.secretaria || 'Não especificada';
+            if (secretariaMap.has(secretaria)) {
+              secretariaMap.set(secretaria, secretariaMap.get(secretaria) + 1);
+            } else {
+              secretariaMap.set(secretaria, 1);
+            }
+          });
+        }
+        
+        // Converter o mapa para um array e ordenar por quantidade (decrescente)
+        const bySecretaria = Array.from(secretariaMap, ([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count);
+        
+        setReportData({
+          totalRecords,
+          bySecretaria
         });
+        
+        setHasGeneratedReport(true);
       }
-      
-      // Converter o mapa para um array e ordenar por quantidade (decrescente)
-      const bySecretaria = Array.from(secretariaMap, ([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count);
-      
-      setReportData({
-        totalRecords,
-        bySecretaria
-      });
-      
-      setHasGeneratedReport(true);
     } catch (err) {
       console.error('Erro ao gerar relatório:', err);
       setError('Erro ao gerar relatório: ' + err.message);

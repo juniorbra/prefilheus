@@ -186,6 +186,9 @@ export default function FilterPage() {
         });
       }
       
+      // Ordenar por ID em ordem decrescente
+      query = query.order('id', { ascending: false });
+      
       // Executar a consulta
       const { data, error } = await query;
       
@@ -260,6 +263,9 @@ export default function FilterPage() {
       if (newFilters.dataFim) {
         query = query.lte('created_at', newFilters.dataFim.toISOString());
       }
+      
+      // Ordenar por ID em ordem decrescente
+      query = query.order('id', { ascending: false });
       
       const { data, error } = await query;
       
