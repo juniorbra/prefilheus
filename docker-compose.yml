@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: hvidigaljr/prefilheus:latest
+    image: ghcr.io/juniorbra/prefilheus:latest
     networks:
       - portainer
     deploy:
