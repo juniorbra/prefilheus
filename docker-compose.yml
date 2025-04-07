@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: ghcr.io/juniorbra/prefilheus:latest
+    image: docker pull ghcr.io/juniorbra/prefilheus:latest@sha256:2af36e8676ee169f37b5ff45c987277b093ca7b786803595684708c88595c346
     networks:
       - portainer
     deploy:
