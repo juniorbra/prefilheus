@@ -21,7 +21,7 @@ export default function SupabaseManager() {
     nome: '',
     email: '',
     telefone: '',
-    mensagem: '',
+    demanda: '',
     secretaria: ''
   });
 
@@ -56,7 +56,7 @@ export default function SupabaseManager() {
       nome: '',
       email: '',
       telefone: '',
-      mensagem: '',
+      demanda: '',
       secretaria: ''
     });
   };
@@ -134,11 +134,11 @@ export default function SupabaseManager() {
             required
           />
           <TextField
-            label="Mensagem"
-            name="mensagem"
+            label="Demanda"
+            name="demanda"
             multiline
             rows={4}
-            value={formData.mensagem}
+            value={formData.demanda}
             onChange={handleInputChange}
             fullWidth
           />

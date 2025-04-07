@@ -298,7 +298,7 @@ export default function FilterPage() {
       nome: record.nome || '',
       email: record.email || '',
       telefone: record.telefone || '',
-      mensagem: record.mensagem || '',
+      demanda: record.demanda || '',
       secretaria: record.secretaria || ''
     });
     setIsEditing(true);
@@ -589,11 +589,11 @@ export default function FilterPage() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Mensagem"
-                  name="mensagem"
+                  label="Demanda"
+                  name="demanda"
                   multiline
                   rows={4}
-                  value={editFormData.mensagem}
+                  value={editFormData.demanda}
                   onChange={handleEditFormChange}
                   fullWidth
                 />
