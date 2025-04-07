@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: ghcr.io/juniorbra/prefilheus:latest@sha256:81b9cfc8b826bd6198400996602660215d2fd765c46c
+    image: ghcr.io/juniorbra/prefilheus:latest@sha256:d8dd0f2ea4ee1823fed07cbb2e9ba4b070094588
     networks:
       - portainer
     deploy:
