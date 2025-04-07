@@ -142,7 +142,7 @@ export default function FilterPage() {
         newActiveFilters.push({ type: 'email', value: filters.email });
       }
       
-      // Aplicar filtro de telefone (busca parcial)
+      // Aplicar filtro de telefone
       if (filters.telefone) {
         query = query.ilike('telefone', `%${filters.telefone}%`);
         newActiveFilters.push({ type: 'telefone', value: filters.telefone });
