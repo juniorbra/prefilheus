@@ -290,7 +290,7 @@ export default function FilterPage() {
             
             <Grid item xs={12} sm={6} md={4}>
               <TextField
-                label="Telefone (busca parcial)"
+                label="Telefone"
                 name="telefone"
                 value={filters.telefone}
                 onChange={handleFilterChange}
